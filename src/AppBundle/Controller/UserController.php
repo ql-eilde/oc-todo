@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,7 +12,6 @@ class UserController extends Controller
 {
     /**
      * @Route("/users", name="user_list")
-     * @Security("has_role('ROLE_ADMIN')")
      */
     public function listAction()
     {
@@ -60,6 +58,8 @@ class UserController extends Controller
         if ($form->isValid()) {
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            $roles = $request->request->get('user');
+            $user->setRoles(array($roles['roles']));
 
             $this->getDoctrine()->getManager()->flush();
 
